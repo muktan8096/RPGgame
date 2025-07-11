@@ -4,47 +4,42 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   preload() {
-    // Load the map JSON with embedded tilesets
-    this.load.tilemapTiledJSON('villageMap', 'assets/maps/village_map.json');
-
-    // Load the matching images
-    this.load.image('FieldsTileset(sec)', 'assets/maps/tilesets/FieldsTileset.png');
-    this.load.image('Tileset2(sec)', 'assets/maps/tilesets/Tileset2.png');
+    // Load the exported map background image
+    this.load.image('mapBackground', 'assets/maps/village_map.png');
 
     // Load the player sprite
     this.load.image('player', 'assets/player.png');
   }
 
   create() {
-    const map = this.make.tilemap({ key: 'villageMap' });
+    // Add static background image to the scene
+    this.add.image(0, 0, 'mapBackground').setOrigin(0, 0);
 
-    // Updated tileset names must match what’s inside your Tiled map
-    const tileset1 = map.addTilesetImage('FieldsTileset(sec)', 'FieldsTileset(sec)');
-    const tileset2 = map.addTilesetImage('Tileset2(sec)', 'Tileset2(sec)');
-
-    // Create all the tile layers
-    map.createLayer('Tile Layer 1', [tileset1, tileset2], 0, 0);
-    map.createLayer('Tile Layer 2', [tileset1, tileset2], 0, 0);
-    map.createLayer('Tile Layer 3', [tileset1, tileset2], 0, 0);
-    map.createLayer('roads', [tileset1, tileset2], 0, 0);
-    map.createLayer('Tile Layer 5', [tileset1, tileset2], 0, 0);
-
-    // Add player
+    // Add the player sprite
     this.player = this.physics.add.sprite(100, 100, 'player').setScale(0.3);
     this.player.setCollideWorldBounds(true);
 
-    // Camera follow
+    // Setup camera to follow player
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    // Keyboard input
+    // Set camera bounds to match background image size
+    // Replace these numbers with the actual dimensions of your background_map.png
+    this.cameras.main.setBounds(0, 0, 3000, 3000);
+
+    // Set world bounds to match camera bounds so physics works correctly
+    this.physics.world.setBounds(0, 0, 3000, 3000);
+
+    // Enable arrow key input
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   update() {
     const speed = 200;
+
+    // Reset velocity each frame
     this.player.setVelocity(0);
 
+    // Movement handling
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-speed);
     } else if (this.cursors.right.isDown) {
