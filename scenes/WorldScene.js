@@ -4,37 +4,53 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   preload() {
-    // Load background and player image
-    this.load.image('bg', 'assets/bg.png');         // Optional
-    this.load.image('player', 'assets/player.png'); // Your placeholder character
+    // Load the map JSON with embedded tilesets
+    this.load.tilemapTiledJSON('villageMap', 'assets/maps/village_map.json');
+
+    // Load the matching images
+    this.load.image('FieldsTileset(sec)', 'assets/maps/tilesets/FieldsTileset.png');
+    this.load.image('Tileset2(sec)', 'assets/maps/tilesets/Tileset2.png');
+
+    // Load the player sprite
+    this.load.image('player', 'assets/player.png');
   }
 
   create() {
-    // Add background to center of screen
-    this.add.image(400, 300, 'bg');
+    const map = this.make.tilemap({ key: 'villageMap' });
 
-    // Add player sprite to center
-    this.player = this.physics.add.sprite(400, 300, 'player').setScale(0.3);
-    this.player.setCollideWorldBounds(true); // Don’t let player leave screen
+    // Updated tileset names must match what’s inside your Tiled map
+    const tileset1 = map.addTilesetImage('FieldsTileset(sec)', 'FieldsTileset(sec)');
+    const tileset2 = map.addTilesetImage('Tileset2(sec)', 'Tileset2(sec)');
 
-    // Set up arrow key input
+    // Create all the tile layers
+    map.createLayer('Tile Layer 1', [tileset1, tileset2], 0, 0);
+    map.createLayer('Tile Layer 2', [tileset1, tileset2], 0, 0);
+    map.createLayer('Tile Layer 3', [tileset1, tileset2], 0, 0);
+    map.createLayer('roads', [tileset1, tileset2], 0, 0);
+    map.createLayer('Tile Layer 5', [tileset1, tileset2], 0, 0);
+
+    // Add player
+    this.player = this.physics.add.sprite(100, 100, 'player').setScale(0.3);
+    this.player.setCollideWorldBounds(true);
+
+    // Camera follow
+    this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // Keyboard input
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   update() {
-    // Reset velocity every frame
+    const speed = 200;
     this.player.setVelocity(0);
 
-    const speed = 200;
-
-    // Move Left/Right
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-speed);
     } else if (this.cursors.right.isDown) {
       this.player.setVelocityX(speed);
     }
 
-    // Move Up/Down
     if (this.cursors.up.isDown) {
       this.player.setVelocityY(-speed);
     } else if (this.cursors.down.isDown) {

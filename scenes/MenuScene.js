@@ -9,7 +9,7 @@ export default class MenuScene extends Phaser.Scene {
     const startText = this.add.text(330, 200, '[ Start Game ]', { fontSize: '24px', color: '#00ff00' })
       .setInteractive()
       .on('pointerdown', () => {
-        this.scene.start('CharacterCreationScene'); // Later change to CharacterCreationScene
+        this.scene.start('CharacterGenderScene'); // Later change to CharacterCreationScene
       });
 
     const loadText = this.add.text(330, 250, '[ Load Game ]', { fontSize: '24px', color: '#00ffff' })
